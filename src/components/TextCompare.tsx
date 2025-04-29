@@ -15,7 +15,7 @@ const TextCompare: React.FC = () => {
   const [diffs, setDiffs] = useState<Array<{ type: 'added' | 'removed' | 'unchanged'; value: string }[]>>([]);
 
   useEffect(() => {
-    // Only calculate diffs when we have at least 2 text boxes with content
+    // Calculate diffs when we have at least 2 text boxes
     if (textBoxes.length >= 2) {
       const allTexts = textBoxes.map(box => box.content);
       const results = compareTexts(allTexts);
@@ -39,6 +39,11 @@ const TextCompare: React.FC = () => {
   const removeTextBox = (id: number) => {
     setTextBoxes((prev) => prev.filter((box) => box.id !== id));
   };
+
+  // Get non-empty text box IDs for comparison display
+  const nonEmptyTextBoxIds = textBoxes
+    .filter(box => box.content.trim() !== "")
+    .map(box => box.id);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -75,10 +80,12 @@ const TextCompare: React.FC = () => {
         </Button>
       </div>
       
-      {/* Diff results display */}
-      <div className="mb-8">
-        <DiffDisplay diffs={diffs} textBoxIds={textBoxes.map(box => box.id)} />
-      </div>
+      {/* Only show diff display if we have at least one comparison with content */}
+      {diffs.length > 0 && (
+        <div className="mb-8">
+          <DiffDisplay diffs={diffs} textBoxIds={textBoxes.map(box => box.id)} />
+        </div>
+      )}
     </div>
   );
 };

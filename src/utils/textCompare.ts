@@ -21,6 +21,11 @@ export const compareTexts = (texts: string[]): DiffResult[][] => {
   const baseLines = textLines[0];
   
   for (let i = 1; i < textLines.length; i++) {
+    // Skip empty text comparisons - only compare when both texts have content
+    if (!texts[0].trim() || !texts[i].trim()) {
+      continue;
+    }
+    
     const compareLines = textLines[i];
     const diff: DiffResult[] = [];
     
