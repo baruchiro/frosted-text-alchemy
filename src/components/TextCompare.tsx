@@ -1,6 +1,8 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TextCompareBox from "./TextCompareBox";
+import DiffDisplay from "./DiffDisplay";
+import { compareTexts } from "@/utils/textCompare";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
 
@@ -9,6 +11,19 @@ const TextCompare: React.FC = () => {
     { id: 0, content: "" },
     { id: 1, content: "" },
   ]);
+  
+  const [diffs, setDiffs] = useState<Array<{ type: 'added' | 'removed' | 'unchanged'; value: string }[]>>([]);
+
+  useEffect(() => {
+    // Only calculate diffs when we have at least 2 text boxes with content
+    if (textBoxes.length >= 2) {
+      const allTexts = textBoxes.map(box => box.content);
+      const results = compareTexts(allTexts);
+      setDiffs(results);
+    } else {
+      setDiffs([]);
+    }
+  }, [textBoxes]);
 
   const handleTextChange = (id: number, newContent: string) => {
     setTextBoxes((prev) =>
@@ -36,7 +51,8 @@ const TextCompare: React.FC = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Text input boxes */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {textBoxes.map((box) => (
           <TextCompareBox
             key={box.id}
@@ -49,7 +65,7 @@ const TextCompare: React.FC = () => {
         ))}
       </div>
 
-      <div className="mt-6 flex justify-center">
+      <div className="mb-8 flex justify-center">
         <Button
           onClick={addNewTextBox}
           className="glass hover:bg-white/30 text-white/90 font-medium"
@@ -57,6 +73,11 @@ const TextCompare: React.FC = () => {
           <PlusIcon className="mr-2 h-4 w-4" />
           Add Text Box
         </Button>
+      </div>
+      
+      {/* Diff results display */}
+      <div className="mb-8">
+        <DiffDisplay diffs={diffs} textBoxIds={textBoxes.map(box => box.id)} />
       </div>
     </div>
   );
