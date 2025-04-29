@@ -45,6 +45,9 @@ const TextCompare: React.FC = () => {
     .filter(box => box.content.trim() !== "")
     .map(box => box.id);
 
+  // Check if we have at least one valid comparison
+  const hasValidComparison = diffs.length > 0;
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       <div className="mb-8 text-center">
@@ -81,9 +84,12 @@ const TextCompare: React.FC = () => {
       </div>
       
       {/* Only show diff display if we have at least one comparison with content */}
-      {diffs.length > 0 && (
+      {hasValidComparison && (
         <div className="mb-8">
-          <DiffDisplay diffs={diffs} textBoxIds={textBoxes.map(box => box.id)} />
+          <DiffDisplay 
+            diffs={diffs} 
+            textBoxIds={textBoxes.map(box => box.id)} 
+          />
         </div>
       )}
     </div>
